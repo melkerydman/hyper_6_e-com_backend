@@ -1,6 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -16,5 +17,13 @@
   "bugs": {
     "url": "https://github.com/melkerydman/hyper_6_e-com_backend/issues"
   },
-  "homepage": "https://github.com/melkerydman/hyper_6_e-com_backend#readme"
+  "homepage": "https://github.com/melkerydman/hyper_6_e-com_backend#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "mongodb": "^4.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15",
+    "prettier": "^2.6.0"
+  }
 }
