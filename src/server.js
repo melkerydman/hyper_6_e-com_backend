@@ -1,7 +1,7 @@
-import express, {Express} from "express";
-import {Db} from mongodb;
-import { productRoutes } from "./modules/products";
-
+// import express, { Express } from "express";
+import express from "express";
+import { Db } from "mongodb";
+import { productRoutes } from "./modules/products.js";
 
 /**
  * Returns a bootstrapped Express server
@@ -13,5 +13,6 @@ export function createServer(db) {
 
   app.use(express.json());
   app.use("/products", productRoutes(db));
+
   return app;
 }

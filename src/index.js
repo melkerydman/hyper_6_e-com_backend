@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { createServer } from "./server";
+import { createServer } from "./server.js";
 
 /**
  * Init MongoDB as first step of the process, the server depends on the data from the database
@@ -17,6 +17,7 @@ const PORT = process.env.PORT || 8080;
 
 async function main() {
   const client = new MongoClient(DB_URL);
+
   await client.connect();
 
   // Declare database variable

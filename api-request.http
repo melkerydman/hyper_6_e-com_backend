@@ -1,0 +1,4 @@
+### Get specific product based on id
+GET http://localhost:8080/products/:id
+### Get all products
+GET http://localhost:8080/products/
