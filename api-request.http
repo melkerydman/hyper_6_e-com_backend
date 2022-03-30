@@ -1,4 +1,28 @@
 ### Get specific product based on id
-GET http://localhost:8080/products/:id
+GET http://localhost:8080/products/6243381c318895064b9ffbf3
 ### Get all products
 GET http://localhost:8080/products/
+
+
+### Get specific Cart from DB
+### "id": "62441d1cd564d0be57ea4368"
+GET http://localhost:8080/cart/:cartId
+
+### Add Cart to DB
+POST http://localhost:8080/cart/
+Content-Type: application/json
+
+{
+  "items": [{"item": 1}, {"item": 2}],
+  "packed": false
+}
+
+### Update cart
+### "cartId": "62441d1cd564d0be57ea4368"
+PATCH http://localhost:8080/cart/62441d1cd564d0be57ea4368
+Content-Type: application/json
+
+{
+  "items": "updated database",
+  "packed": true
+}

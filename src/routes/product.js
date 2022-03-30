@@ -1,4 +1,4 @@
-import express from "express";
+// import express from "express";
 import { Router } from "express";
 import { Db, ObjectId } from "mongodb";
 
@@ -9,7 +9,6 @@ import { Db, ObjectId } from "mongodb";
 
 const findSpecificProductHandler = (db) => async (req, res) => {
   const productId = req.params.id;
-  console.log("find product", productId);
 
   if (!ObjectId.isValid(productId)) {
     res.sendStatus(404);

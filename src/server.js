@@ -2,7 +2,9 @@
 import express from "express";
 import { Db } from "mongodb";
 import cors from "cors";
-import { productRoutes } from "./modules/products.js";
+import { productRoutes } from "./routes/product.js";
+import { orderRoutes } from "./routes/order.js";
+import { cartRoutes } from "./routes/cart.js";
 
 /**
  * Returns a bootstrapped Express server
@@ -19,6 +21,8 @@ export function createServer(db) {
     })
   );
   app.use("/products", productRoutes(db));
+  app.use("/orders", orderRoutes(db));
+  app.use("/cart", cartRoutes(db));
 
   return app;
 }
