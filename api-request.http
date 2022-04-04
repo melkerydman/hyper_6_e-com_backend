@@ -26,3 +26,25 @@ Content-Type: application/json
   "items": "updated database",
   "packed": true
 }
+
+###
+POST http://localhost:8080/cart/test
+Content-Type: application/json
+
+{
+  "productId": "6243381c318895064b9ffbf3",
+"quantity": 3,
+"userId": "rjec62hnp8cnqdmfnlpl6nphg5f"}
+
+
+
+
+
+
+
+
+
+
+### Add Cart TEST
+POST http://localhost:8080/cart/test
+Content-Type: application/json

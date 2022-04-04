@@ -6,63 +6,60 @@ import { Db, ObjectId } from "mongodb";
  * Handlers take a MongoDB instance and returns an Express handler function to be registered on the router at the bottom
  */
 
-// Add new cart document to collection
-const addCartHandler = (db) => async (req, res) => {
-  const cart = req.body;
-  console.log("cart: ", cart);
-
-  const result = await db.collection("cart").insertOne(cart);
-
-  res.json({
-    id: result.insertedId,
-  });
-};
-
 // Find existing cart document
-const findCartByIdHandler = (db) => async (req, res) => {
+const getCartById = (db) => async (req, res) => {
   const cartId = req.params.cartId;
+  const collection = await db.collection("carts");
 
-  const cart = await db
-    .collection("cart")
-    .findOne({ _id: new ObjectId(cartId) });
+  const cart = await collection.findOne({ _id: cartId });
 
   if (cart) {
     res.json(cart);
   } else {
+    console.log(cart);
     res.sendStatus(404);
   }
 };
 
-// If cart document exists – update it
-const updateCartHandler = (db) => async (req, res) => {
-  const cartId = req.params.cartId;
-  const requestBody = req.body;
-  console.log("requestBody: ", requestBody);
+const addToCart = (db) => async (req, res) => {
+  const userId = req.body.userId;
+  const productId = req.body.productId;
+  const quantity = req.body.quantity;
 
-  if (!ObjectId.isValid(cartId)) {
-    res.sendStatus(404);
-    return;
+  console.log("typeof userId: ", typeof userId);
+
+  const collection = await db.collection("carts");
+
+  const inCart = await collection.count({
+    _id: userId,
+    "items._id": new ObjectId(productId),
+  });
+
+  if (inCart > 0) {
+    console.log(
+      "Aldready in cart, will update item and increase total quantity"
+    );
+    const result = await collection.updateOne(
+      { _id: userId, "items._id": new ObjectId(productId) },
+      { $inc: { "items.$.quantity": quantity, totalQuantity: quantity } }
+    );
+    res.status(200).json(userId);
   }
 
-  const documentCount = await db.collection("cart").count({
-    _id: new ObjectId(cartId),
-  });
-  const cartExists = documentCount === 1;
-
-  if (cartExists) {
-    await db.collection("cart").updateOne(
-      { _id: new ObjectId(cartId) },
+  // Document not exists then add document
+  else {
+    console.log("Not in cart, will create and update total quantity");
+    const result = await collection.updateOne(
+      { _id: userId },
       {
-        $set: {
-          isShowing: requestBody.cart.isShowing,
-          items: requestBody.cart.items,
-          totalQuantity: requestBody.cart.totalQuantity,
+        $inc: {
+          totalQuantity: quantity,
         },
-      }
+        $push: { items: { _id: new ObjectId(productId), quantity: quantity } },
+      },
+      { upsert: true }
     );
-    res.sendStatus(200);
-  } else {
-    res.sendStatus(404);
+    res.status(200).json(userId);
   }
 };
 
@@ -74,9 +71,10 @@ const updateCartHandler = (db) => async (req, res) => {
 export const cartRoutes = (db) => {
   const router = new Router();
   // Add routes here
-  router.get("/:cartId", findCartByIdHandler(db));
-  router.patch("/:cartId", updateCartHandler(db));
-  router.post("/", addCartHandler(db));
+  router.get("/:cartId", getCartById(db));
+  // router.patch("/:cartId", updateCartHandler(db));
+  // router.post("/", addCartHandler(db));
+  router.post("/", addToCart(db));
 
   return router;
 };
