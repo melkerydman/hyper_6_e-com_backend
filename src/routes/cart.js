@@ -25,8 +25,8 @@ const addToCart = (db) => async (req, res) => {
   const userId = req.body.userId;
   const productId = req.body.productId;
   const quantity = req.body.quantity;
-
-  console.log("typeof userId: ", typeof userId);
+  const title = req.body.title;
+  const price = req.body.price;
 
   const collection = await db.collection("carts");
 
@@ -39,9 +39,15 @@ const addToCart = (db) => async (req, res) => {
     console.log(
       "Aldready in cart, will update item and increase total quantity"
     );
-    const result = await collection.updateOne(
+    await collection.updateOne(
       { _id: userId, "items._id": new ObjectId(productId) },
-      { $inc: { "items.$.quantity": quantity, totalQuantity: quantity } }
+      {
+        $inc: {
+          "items.$.quantity": quantity,
+          totalPrice: price,
+          totalQuantity: quantity,
+        },
+      }
     );
     res.status(200).json(userId);
   }
@@ -49,15 +55,78 @@ const addToCart = (db) => async (req, res) => {
   // Document not exists then add document
   else {
     console.log("Not in cart, will create and update total quantity");
-    const result = await collection.updateOne(
+    await collection.updateOne(
       { _id: userId },
       {
         $inc: {
           totalQuantity: quantity,
+          totalPrice: price,
         },
-        $push: { items: { _id: new ObjectId(productId), quantity: quantity } },
+        $push: {
+          items: {
+            _id: new ObjectId(productId),
+            quantity: quantity,
+            title: title,
+            price: price,
+          },
+        },
       },
       { upsert: true }
+    );
+    res.status(200).json(userId);
+  }
+};
+
+const removeFromCart = (db) => async (req, res) => {
+  const userId = req.body.userId;
+  const productId = req.body.productId;
+  const clear = req.body.clear;
+
+  const collection = await db.collection("carts");
+  const cart = await collection.findOne({ _id: userId });
+  const cartItemToRemove = cart.items.find(
+    (item) => item._id.toString() === new ObjectId(productId).toString()
+  );
+
+  if (!clear) {
+    if (cartItemToRemove.quantity > 1) {
+      console.log("mulitple items left");
+      await collection.updateOne(
+        { _id: userId, "items._id": new ObjectId(productId) },
+        {
+          $inc: {
+            "items.$.quantity": -1,
+            totalPrice: -cartItemToRemove.price,
+            totalQuantity: -1,
+          },
+        }
+      );
+    } else {
+      console.log("only one item left");
+      await collection.updateOne(
+        { _id: userId, "items._id": new ObjectId(productId) },
+        {
+          $inc: {
+            totalPrice: -cartItemToRemove.price,
+            totalQuantity: -1,
+          },
+          $pull: { items: { _id: new ObjectId(productId) } },
+        }
+      );
+    }
+    res.status(200).json(userId);
+  } else {
+    const sumToSubract = cartItemToRemove.price * cartItemToRemove.quantity;
+
+    await collection.updateOne(
+      { _id: userId, "items._id": new ObjectId(productId) },
+      {
+        $inc: {
+          totalPrice: -sumToSubract,
+          totalQuantity: -cartItemToRemove.quantity,
+        },
+        $pull: { items: { _id: new ObjectId(productId) } },
+      }
     );
     res.status(200).json(userId);
   }
@@ -75,6 +144,7 @@ export const cartRoutes = (db) => {
   // router.patch("/:cartId", updateCartHandler(db));
   // router.post("/", addCartHandler(db));
   router.post("/", addToCart(db));
+  router.delete("/", removeFromCart(db));
 
   return router;
 };
