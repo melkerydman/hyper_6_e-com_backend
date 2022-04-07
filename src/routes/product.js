@@ -26,7 +26,7 @@ const getProductById = (db) => async (req, res) => {
   }
 };
 
-const getAllProducts = (db) => async (req, res) => {
+const getProducts = (db) => async (req, res) => {
   console.log("find all products");
   const products = await db.collection("products").find({}).toArray();
 
@@ -42,7 +42,7 @@ export const productRoutes = (db) => {
   const router = new Router();
   // Add routes here
   router.get("/:id", getProductById(db));
-  router.get("/", getAllProducts(db));
+  router.get("/", getProducts(db));
 
   return router;
 };

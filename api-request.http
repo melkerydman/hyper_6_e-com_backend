@@ -45,6 +45,14 @@ Content-Type: application/json
 
 
 
-### Add Cart TEST
-POST http://localhost:8080/cart/test
+### Get all orders
+GET http://localhost:8080/orders
 Content-Type: application/json
+
+### Create order
+POST http://localhost:8080/orders
+Content-Type: application/json
+
+{
+  "cartId": "6243381c318895064b9ffbf3"
+}

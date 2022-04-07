@@ -22,11 +22,12 @@ const getCartById = (db) => async (req, res) => {
 };
 
 const addToCart = (db) => async (req, res) => {
-  const userId = req.body.userId;
-  const productId = req.body.productId;
-  const quantity = req.body.quantity;
-  const title = req.body.title;
-  const price = req.body.price;
+  const { userId, productId, quantity, title, price } = req.body;
+  // const userId = req.body.userId;
+  // const productId = req.body.productId;
+  // const quantity = req.body.quantity;
+  // const title = req.body.title;
+  // const price = req.body.price;
 
   const collection = await db.collection("carts");
 
@@ -78,11 +79,13 @@ const addToCart = (db) => async (req, res) => {
 };
 
 const removeFromCart = (db) => async (req, res) => {
-  const userId = req.body.userId;
-  const productId = req.body.productId;
-  const clear = req.body.clear;
+  const { userId, productId, clear } = req.body;
+  // const userId = req.body.userId;
+  // const productId = req.body.productId;
+  // const clear = req.body.clear;
 
   const collection = await db.collection("carts");
+
   const cart = await collection.findOne({ _id: userId });
   const cartItemToRemove = cart.items.find(
     (item) => item._id.toString() === new ObjectId(productId).toString()
