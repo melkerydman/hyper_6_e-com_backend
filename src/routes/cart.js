@@ -23,11 +23,6 @@ const getCartById = (db) => async (req, res) => {
 
 const addToCart = (db) => async (req, res) => {
   const { userId, productId, quantity, title, price } = req.body;
-  // const userId = req.body.userId;
-  // const productId = req.body.productId;
-  // const quantity = req.body.quantity;
-  // const title = req.body.title;
-  // const price = req.body.price;
 
   const collection = await db.collection("carts");
 
@@ -35,6 +30,9 @@ const addToCart = (db) => async (req, res) => {
     _id: userId,
     "items._id": new ObjectId(productId),
   });
+
+  // Calculate new total price to be added to cart object
+  const newTotalPrice = quantity * price;
 
   if (inCart > 0) {
     console.log(
@@ -45,7 +43,7 @@ const addToCart = (db) => async (req, res) => {
       {
         $inc: {
           "items.$.quantity": quantity,
-          totalPrice: price,
+          totalPrice: newTotalPrice,
           totalQuantity: quantity,
         },
       }
@@ -61,7 +59,7 @@ const addToCart = (db) => async (req, res) => {
       {
         $inc: {
           totalQuantity: quantity,
-          totalPrice: price,
+          totalPrice: newTotalPrice,
         },
         $push: {
           items: {
@@ -80,9 +78,6 @@ const addToCart = (db) => async (req, res) => {
 
 const removeFromCart = (db) => async (req, res) => {
   const { userId, productId, clear } = req.body;
-  // const userId = req.body.userId;
-  // const productId = req.body.productId;
-  // const clear = req.body.clear;
 
   const collection = await db.collection("carts");
 
@@ -104,19 +99,20 @@ const removeFromCart = (db) => async (req, res) => {
           },
         }
       );
-    } else {
-      console.log("only one item left");
-      await collection.updateOne(
-        { _id: userId, "items._id": new ObjectId(productId) },
-        {
-          $inc: {
-            totalPrice: -cartItemToRemove.price,
-            totalQuantity: -1,
-          },
-          $pull: { items: { _id: new ObjectId(productId) } },
-        }
-      );
     }
+    // else {
+    //   console.log("only one item left");
+    //   await collection.updateOne(
+    //     { _id: userId, "items._id": new ObjectId(productId) },
+    //     {
+    //       $inc: {
+    //         totalPrice: -cartItemToRemove.price,
+    //         totalQuantity: -1,
+    //       },
+    //       $pull: { items: { _id: new ObjectId(productId) } },
+    //     }
+    //   );
+    // }
     res.status(200).json(userId);
   } else {
     const sumToSubract = cartItemToRemove.price * cartItemToRemove.quantity;

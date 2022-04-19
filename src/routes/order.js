@@ -15,7 +15,11 @@ import { Db, ObjectId } from "mongodb";
 
 const getOrders = (db) => async (req, res) => {
   const ordersCol = await db.collection("orders");
-  console.log(ordersCol);
+
+  const orders = await ordersCol.find().toArray();
+
+  console.log(orders);
+  res.json(orders);
 };
 
 const createOrder = (db) => async (req, res) => {
