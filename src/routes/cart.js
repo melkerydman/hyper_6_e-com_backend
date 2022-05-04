@@ -14,15 +14,20 @@ import { Db, ObjectId } from "mongodb";
 const getCartById = (db) => async (req, res) => {
   const cartId = req.params.cartId;
   console.log(cartId);
-  const collection = await db.collection("carts");
 
-  const cart = await collection.findOne({ _id: new ObjectId(cartId) });
+  try {
+    const collection = await db.collection("carts");
 
-  if (cart) {
-    res.json(cart);
-  } else {
-    console.log(cart);
-    res.sendStatus(404);
+    const cart = await collection.findOne({ _id: new ObjectId(cartId) });
+
+    if (cart) {
+      res.json(cart);
+    } else {
+      console.log(cart);
+      res.sendStatus(404);
+    }
+  } catch (err) {
+    console.log(err);
   }
 };
 
