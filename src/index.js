@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import { MongoClient } from "mongodb";
 import { createServer } from "./server.js";
 
@@ -8,15 +10,17 @@ import { createServer } from "./server.js";
 
 // Use a MongoDB url from the environment if it exists,
 // otherwise use a locally running one.
-const DB_URL = process.env.MONGODB_URL || "mongodb://localhost:27017";
+const uri = process.env.MONGODB_URI || "mongodb://localhost:27017";
+
 // Name of the db in MongoDB
-const DB_NAME = "e-com-api";
+const DB_NAME = "data-interaction";
 
 // Use PORT from the environment or default to 8080.
 const PORT = process.env.PORT || 8080;
 
 async function main() {
-  const client = new MongoClient(DB_URL);
+  // const client = new MongoClient(DB_URL);
+  const client = new MongoClient(uri, { useUnifiedTopology: true });
 
   await client.connect();
 

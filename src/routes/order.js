@@ -14,12 +14,16 @@ import { Router } from "express";
 import { Db, ObjectId } from "mongodb";
 
 const getOrders = (db) => async (req, res) => {
-  const ordersCol = await db.collection("orders");
+  try {
+    const ordersCol = await db.collection("orders");
 
-  const orders = await ordersCol.find().toArray();
+    const orders = await ordersCol.find().toArray();
 
-  console.log(orders);
-  res.json(orders);
+    console.log(orders);
+    res.json(orders);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 const createOrder = (db) => async (req, res) => {
@@ -29,21 +33,24 @@ const createOrder = (db) => async (req, res) => {
 
   const ordersCol = await db.collection("orders");
   const cartsCol = await db.collection("carts");
+  try {
+    const orderId = await ordersCol
+      .insertOne({
+        items: cart.items,
+        amount: cart.totalPrice,
+        userInfo: formData,
+        orderStatus: { packed: false, dispatched: false },
+      })
+      .then((resp) => {
+        console.log("response: ", resp);
+        return resp.insertedId;
+      });
 
-  const orderId = await ordersCol
-    .insertOne({
-      items: cart.items,
-      amount: cart.totalPrice,
-      userInfo: formData,
-      orderStatus: { packed: false, dispatched: false },
-    })
-    .then((resp) => {
-      console.log("response: ", resp);
-      return resp.insertedId;
-    });
-
-  cartsCol.deleteOne({ _id: cart._id });
-  res.json(orderId);
+    cartsCol.deleteOne({ _id: new ObjectId(cart._id) });
+    res.json(orderId);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 /**
