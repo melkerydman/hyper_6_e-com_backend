@@ -15,11 +15,7 @@ export function createServer(db) {
   const app = express();
 
   app.use(express.json());
-  app.use(
-    cors({
-      origin: "http://localhost:3000",
-    })
-  );
+  app.use(cors());
   app.use("/products", productRoutes(db));
   app.use("/orders", orderRoutes(db));
   app.use("/cart", cartRoutes(db));

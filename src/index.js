@@ -16,7 +16,8 @@ const uri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const DB_NAME = "data-interaction";
 
 // Use PORT from the environment or default to 8080.
-const PORT = process.env.PORT || 8080;
+// const PORT = process.env.PORT || 8080;
+// console.log(PORT);
 
 async function main() {
   // const client = new MongoClient(DB_URL);
@@ -30,7 +31,7 @@ async function main() {
   // Server takes db as an argument, in order to make it accessible to all routes and route handlers
   const server = createServer(db);
 
-  server.listen(PORT, () => {
+  server.listen(process.env.PORT || 8080, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
 }
