@@ -12,19 +12,19 @@ import { cartRoutes } from "./routes/cart.js";
  * @returns {Express}
  */
 
-// const corsOptions = {
-//   origin: ["http://localhost:3000", "https://hyper-6-ecom.netlify.app/"],
-//   credentials: true,
-// };
+const corsOptions = {
+  origin: ["http://localhost:3000", "https://hyper-6-ecom.netlify.app/"],
+  credentials: true,
+};
 export function createServer(db) {
   const app = express();
 
-  app.options("*", cors());
+  app.options("*", cors(corsOptions));
 
   app.use(express.json());
   // app.use(cors(corsOptions));
-  // app.use(cors());
-  app.use("/products", cors(), productRoutes(db));
+  app.use(cors(corsOptions));
+  app.use("/products", productRoutes(db));
   app.use("/orders", orderRoutes(db));
   app.use("/cart", cartRoutes(db));
 
