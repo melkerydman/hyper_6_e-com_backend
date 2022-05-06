@@ -22,6 +22,8 @@ const corsOptions = {
 export function createServer(db) {
   const app = express();
 
+  app.options("*", cors());
+
   app.use(express.json());
   app.use(cors(corsOptions));
   app.use("/products", productRoutes(db));
