@@ -13,11 +13,7 @@ import { cartRoutes } from "./routes/cart.js";
  */
 
 const corsOptions = {
-  origin: [
-    "http://localhost:3000",
-    "https://hyper-6-ecom.netlify.app",
-    "https://hyper-6-e-com.herokuapp.com",
-  ],
+  origin: ["http://localhost:3000", "https://hyper-6-ecom.netlify.app"],
   credentials: true,
 };
 export function createServer(db) {
